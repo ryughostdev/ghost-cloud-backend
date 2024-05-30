@@ -2,6 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { environment } from 'config/constants';
+import * as expressSession from 'express-session';
+import { PrismaSessionStore } from '@quixo3/prisma-session-store';
+import { PrismaClient } from '@prisma/client';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
@@ -11,10 +16,9 @@ async function bootstrap() {
     }),
   );
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('Ghost Cloud API')
+    .setDescription('The API for Ghost Cloud application')
     .setVersion('1.0')
-    .addTag('cats')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
@@ -22,6 +26,23 @@ async function bootstrap() {
   app.enableCors({
     origin: 'http://localhost:3000',
   });
+  app.use(
+    expressSession({
+      cookie: {
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        secure: environment === 'production',
+        sameSite: environment === 'production' ? 'none' : false,
+      },
+      secret: 'vive en una piña debajo del mar',
+      resave: true,
+      saveUninitialized: false,
+      store: new PrismaSessionStore(new PrismaClient(), {
+        checkPeriod: 2 * 60 * 1000, //ms
+        dbRecordIdIsSessionId: true,
+        dbRecordIdFunction: undefined,
+      }),
+    }),
+  );
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
