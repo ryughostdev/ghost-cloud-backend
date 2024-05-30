@@ -6,9 +6,10 @@ import { environment } from 'config/constants';
 import * as expressSession from 'express-session';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import { PrismaClient } from '@prisma/client';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -25,9 +26,11 @@ async function bootstrap() {
 
   app.enableCors({
     origin: 'http://localhost:3000',
+    credentials: true,
   });
   app.use(
     expressSession({
+      name: 'sessionId',
       cookie: {
         maxAge: 7 * 24 * 60 * 60 * 1000,
         secure: environment === 'production',
@@ -43,6 +46,7 @@ async function bootstrap() {
       }),
     }),
   );
+  app.set('trust proxy', 1);
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

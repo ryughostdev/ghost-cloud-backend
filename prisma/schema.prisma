@@ -24,7 +24,7 @@ model User {
 }
 model Session {
   id        String   @id
-  sid       String   @unique @db.VarChar(255)
-  data      String
+  sid       String   @unique
+  data      String   @db.VarChar(255)
   expiresAt   DateTime
 }
