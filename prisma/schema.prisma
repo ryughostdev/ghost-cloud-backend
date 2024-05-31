@@ -23,7 +23,7 @@ model User {
   updatedAt DateTime @updatedAt
 }
 model Session {
-  id        String   @id
+  id        String   @id 
   sid       String   @unique
   data      String   @db.VarChar(255)
   expiresAt   DateTime

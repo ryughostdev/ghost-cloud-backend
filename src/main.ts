@@ -40,9 +40,10 @@ async function bootstrap() {
       resave: true,
       saveUninitialized: false,
       store: new PrismaSessionStore(new PrismaClient(), {
-        checkPeriod: 2 * 60 * 1000, //ms
+        checkPeriod: 2 * 60 * 1000,
         dbRecordIdIsSessionId: true,
         dbRecordIdFunction: undefined,
+        sessionModelName: 'session',
       }),
     }),
   );
