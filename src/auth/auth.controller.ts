@@ -18,7 +18,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { IsLoggedInGuard } from './guards/is-logged-in/is-logged-in.guard';
 import { UsersService } from 'src/users/users.service';
