@@ -16,7 +16,7 @@ export class AuthService {
     });
     if (!user) return null;
     if (user.password !== body.password)
-      throw new HttpException('Wrong Password', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Invalid Password', HttpStatus.UNAUTHORIZED);
     return user;
   }
 }

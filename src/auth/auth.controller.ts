@@ -9,14 +9,7 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBody,
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { LoginDto } from './dto/login.dto';
@@ -24,6 +17,8 @@ import { IsLoggedInGuard } from './guards/is-logged-in/is-logged-in.guard';
 import { UsersService } from 'src/users/users.service';
 import { SessionData } from 'express-session';
 import { IsNotLoggedInGuard } from './guards/is-not-logged-in/is-not-logged-in.guard';
+import { ApiLogin, ApiLogout } from './auth.swagger';
+
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
@@ -32,38 +27,7 @@ export class AuthController {
     private usersService: UsersService,
   ) {}
 
-  @ApiOperation({
-    summary: 'Login',
-    description: 'Logs in a user and sets the session',
-  })
-  @ApiOkResponse({
-    description: 'User logged in',
-    schema: {
-      example: {
-        id: 0,
-        email: 'email@mail.com',
-        name: 'user',
-        password: '',
-        status: 'active',
-        createdAt: '2024-05-30T07:53:19.200Z',
-        updatedAt: '2024-05-30T07:53:19.200Z',
-        isLoggedIn: true,
-      },
-    },
-  })
-  @ApiBody({
-    type: LoginDto,
-    examples: {
-      user: {
-        value: {
-          email: 'user_email@email.com',
-          password: 'userPasword1234!',
-        },
-        summary: 'User email and password',
-      },
-    },
-    required: true,
-  })
+  @ApiLogin()
   @Post('/login')
   @UseGuards(IsLoggedInGuard)
   async login(
@@ -78,25 +42,7 @@ export class AuthController {
     res.status(HttpStatus.OK).send({ ...user, isLoggedIn: true, password: '' });
   }
 
-  @ApiOperation({
-    summary: 'Logout',
-    description: 'Logs out a user and set session isLoggedIn = false',
-  })
-  @ApiOkResponse({
-    description: 'User logged out',
-    schema: {
-      example: {
-        id: 0,
-        email: 'email@mail.com',
-        name: 'user',
-        password: '',
-        status: 'active',
-        createdAt: '2024-05-30T07:53:19.200Z',
-        updatedAt: '2024-05-30T07:53:19.200Z',
-        isLoggedIn: false,
-      },
-    },
-  })
+  @ApiLogout()
   @Get('/logout')
   @UseGuards(IsNotLoggedInGuard)
   async logout(@Res() res: Response, @Session() session: SessionData) {
