@@ -35,21 +35,36 @@ export class AuthController {
     @Body() body: LoginDto,
     @Session() session: SessionData,
   ) {
-    const user = await this.authService.login(body);
-    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    session.userId = user.id;
-    session.isLoggedIn = true;
-    res.status(HttpStatus.OK).send({ ...user, isLoggedIn: true, password: '' });
+    try {
+      const user = await this.authService.login(body);
+      const { password, ...userData } = user;
+      if (!user)
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      session.userId = user.id;
+      session.isLoggedIn = true;
+      res.status(HttpStatus.ACCEPTED).send({ ...userData, isLoggedIn: true });
+    } catch (e) {
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @ApiLogout()
   @Get('/logout')
   @UseGuards(IsNotLoggedInGuard)
   async logout(@Res() res: Response, @Session() session: SessionData) {
-    session.isLoggedIn = false;
-    const user = await this.usersService.getUser(session.userId);
-    res
-      .status(HttpStatus.OK)
-      .send({ ...user, isLoggedIn: false, password: '' });
+    try {
+      const user = await this.usersService.getUser(session.userId);
+      session.isLoggedIn = false;
+      const { password, ...userData } = user;
+      res.status(HttpStatus.OK).send({ ...userData, isLoggedIn: false });
+    } catch (error) {
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

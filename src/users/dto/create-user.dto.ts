@@ -17,7 +17,7 @@ export class CreateUserDto {
   password: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   name: string;
 
   // contiene 'active' o 'unactive'

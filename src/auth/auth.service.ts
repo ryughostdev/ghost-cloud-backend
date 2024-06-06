@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { Request, Response } from 'express';
 import { environment } from 'config/constants';
+import { passwordCompare } from 'src/users/utils/handlePassword';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,9 @@ export class AuthService {
       },
     });
     if (!user) return null;
-    if (user.password !== body.password)
+    const check = await passwordCompare(body.password, user.password);
+
+    if (!check)
       throw new HttpException('Invalid Password', HttpStatus.UNAUTHORIZED);
     return user;
   }
