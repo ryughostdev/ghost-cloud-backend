@@ -19,4 +19,7 @@ export class UsersService {
   deleteUser(id: number) {
     return this.prisma.user.delete({ where: { id } });
   }
+  updateUser(id: number, user: CreateUserDto) {
+    return this.prisma.user.update({ where: { id }, data: user });
+  }
 }

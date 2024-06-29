@@ -17,11 +17,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserStatusGuard } from './guards/user-status/user-status.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
+import { EmailService } from 'src/email/email.service';
 
 @Controller('users')
 @ApiTags('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private emailService: EmailService,
+  ) {}
 
   @ApiOperation({ summary: 'Get all users' })
   @Get()
@@ -61,6 +65,10 @@ export class UsersController {
     try {
       const newUser = await this.usersService.createUser(body);
       const { password, ...user } = newUser;
+
+      if (newUser.id >= 1) {
+        await this.emailService.sendEmailVerification(newUser.email);
+      }
       res.status(HttpStatus.CREATED).send(user);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {

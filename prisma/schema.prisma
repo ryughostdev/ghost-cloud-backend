@@ -18,13 +18,24 @@ model User {
   email     String   @unique
   name      String?
   password  String
-  status    String   @default("active")
+  status    String   @default("inactive")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tokens    Temporal_token_pool[]
 }
 model Session {
   id        String   @id 
   sid       String   @unique
   data      String   @db.VarChar(255)
   expiresAt   DateTime
+}
+
+model Temporal_token_pool {
+  id             Int      @id @default(autoincrement())
+  token          String   @unique
+  userEmail      String
+  user           User    @relation(fields: [userEmail], references: [email])
+  type           String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
