@@ -89,32 +89,28 @@ export class EmailService {
         }
         if (!formatedSubscribeInfo.includes(groupCampainEmailService)) {
           formatedSubscribeInfo.push(groupCampainEmailService);
-          try {
-            const response2 = await fetch(
-              `https://api.hubapi.com/contacts/v1/contact/vid/${vid}/profile`,
-              {
-                method: 'POST',
-                headers: {
-                  Authorization: `Bearer ${tokenCampainEmailService}`,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  properties: [
-                    {
-                      property: 'subscribed_to',
-                      value: formatedSubscribeInfo.join(';'),
-                    },
-                  ],
-                }),
+          const response2 = await fetch(
+            `https://api.hubapi.com/contacts/v1/contact/vid/${vid}/profile`,
+            {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${tokenCampainEmailService}`,
+                'Content-Type': 'application/json',
               },
-            );
-            if (response2.ok) {
-              return {
-                message: 'Subscribed successfully',
-              };
-            }
-          } catch (error) {
-            throw new Error('Error updating contact in hubspot');
+              body: JSON.stringify({
+                properties: [
+                  {
+                    property: 'subscribed_to',
+                    value: formatedSubscribeInfo.join(';'),
+                  },
+                ],
+              }),
+            },
+          );
+          if (response2.ok) {
+            return {
+              message: 'Subscribed successfully',
+            };
           }
         }
         return {
@@ -141,8 +137,6 @@ export class EmailService {
           return {
             message: 'Subscribed successfully',
           };
-        } else {
-          throw new Error('Error creating contact in hubspot');
         }
       }
     } catch (error) {
