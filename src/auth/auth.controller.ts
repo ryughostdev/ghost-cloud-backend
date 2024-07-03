@@ -81,9 +81,7 @@ export class AuthController {
   ) {
     try {
       const verifyData = await this.authService.verifyEmail(token);
-      if (verifyData) {
-        await this.emailService.subscribeToNewsLetter(verifyData.email);
-      }
+      await this.emailService.subscribeToNewsLetter(verifyData.email);
       res.status(HttpStatus.OK).send({ status: 'active' });
     } catch (error) {
       throw new HttpException(

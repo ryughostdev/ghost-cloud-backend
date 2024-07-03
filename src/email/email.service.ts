@@ -121,7 +121,29 @@ export class EmailService {
           message: 'Already subscribed',
         };
       } else {
-        throw new Error('Contact not updated in hubspot');
+        const response3 = await fetch(
+          'https://api.hubapi.com/crm/v3/objects/contacts',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${tokenCampainEmailService}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              properties: {
+                email,
+                subscribed_to: groupCampainEmailService,
+              },
+            }),
+          },
+        );
+        if (response3.ok) {
+          return {
+            message: 'Subscribed successfully',
+          };
+        } else {
+          throw new Error('Error creating contact in hubspot');
+        }
       }
     } catch (error) {
       return new Response(JSON.stringify({ message: 'Unknow Error' }), {
