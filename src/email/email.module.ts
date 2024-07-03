@@ -23,12 +23,11 @@ import { AppDefaultEmail } from 'config/constants';
           dir: __dirname + '/../../config/templates',
           adapter: new EjsAdapter(),
           options: {
-            strict: true,
+            strict: false,
           },
         },
       }),
     }),
   ],
-  exports: [EmailService],
 })
 export class EmailModule {}

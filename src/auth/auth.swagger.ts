@@ -51,10 +51,26 @@ export function ApiLogout() {
           id: 0,
           email: 'email@mail.com',
           name: 'user',
-          status: 'active',
+          status: 'incative',
           createdAt: '2024-05-30T07:53:19.200Z',
           updatedAt: '2024-05-30T07:53:19.200Z',
           isLoggedIn: false,
+        },
+      },
+    }),
+  );
+}
+export function ApiVerify() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'Verify Email',
+      description: 'Verifies the email of a user',
+    }),
+    ApiOkResponse({
+      description: 'Email verified',
+      schema: {
+        example: {
+          status: 'active',
         },
       },
     }),
