@@ -8,9 +8,13 @@ export class AuthService {
   constructor(private prisma: PrismaService) {}
 
   async login(body: LoginDto) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.users.findUnique({
       where: {
         email: body.email,
+      },
+      include: {
+        services: true,
+        roles: true,
       },
     });
     if (!user) return null;
@@ -29,13 +33,13 @@ export class AuthService {
       if (!tempToken) {
         throw new Error('Invalid token');
       } else {
-        await this.prisma.user.update({
+        const data = await this.prisma.users.update({
           where: { email: tempToken.userEmail },
           data: { status: 'active' },
         });
         await this.prisma.temporal_token_pool.delete({ where: { token } });
+        return { status: 'active', email: tempToken.userEmail, id: data.id };
       }
-      return { status: 'active', email: tempToken.userEmail };
     } catch (error) {
       throw new Error('Error verifying email');
     }

@@ -6,7 +6,6 @@ import {
   HttpStatus,
   Param,
   Post,
-  Query,
   Res,
   Session,
   UseGuards,
@@ -21,6 +20,7 @@ import { SessionData } from 'express-session';
 import { IsNotLoggedInGuard } from './guards/is-not-logged-in/is-not-logged-in.guard';
 import { ApiLogin, ApiLogout, ApiVerify } from './auth.swagger';
 import { EmailService } from 'src/email/email.service';
+import { userRoles } from 'config/constants';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -74,13 +74,16 @@ export class AuthController {
 
   @ApiVerify()
   @Get('/verify-email/:token')
-  async verifyEamil(
+  async verifyEmail(
     @Res() res: Response,
     @Session() session: SessionData,
     @Param('token') token: string,
   ) {
     try {
       const verifyData = await this.authService.verifyEmail(token);
+      if (verifyData.status !== 'active')
+        throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+      await this.usersService.addRole(verifyData.id, userRoles.User.id);
       await this.emailService.subscribeToNewsLetter(verifyData.email);
       res.status(HttpStatus.OK).send({ status: 'active' });
     } catch (error) {

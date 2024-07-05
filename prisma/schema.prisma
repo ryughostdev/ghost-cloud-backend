@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+   previewFeatures = ["omitApi"]
 }
 
 datasource db {
@@ -13,7 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Users {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   name      String?
@@ -22,6 +23,15 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   tokens    Temporal_token_pool[]
+  services  Service_instances[]
+  roles     roles[]
+}
+model roles {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     Users[]
 }
 model Session {
   id        String   @id 
@@ -34,8 +44,37 @@ model Temporal_token_pool {
   id             Int      @id @default(autoincrement())
   token          String   @unique
   userEmail      String
-  user           User    @relation(fields: [userEmail], references: [email])
+  user           Users    @relation(fields: [userEmail], references: [email])
   type           String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+model Services {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  status    String   @default("active")
+  memory    Int
+  cores     Int
+  disk      Int
+  os        String
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  service_instance Service_instances[]
+}
+model Service_instances {
+  id        Int      @id @default(autoincrement())
+  serviceId Int
+  userId    Int
+  ip        String
+  serviceUsername String
+  servicePassword String
+  paymentDate DateTime
+  price     Float
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      Users     @relation(fields: [userId], references: [id])
+  service   Services @relation(fields: [serviceId], references: [id])
 }

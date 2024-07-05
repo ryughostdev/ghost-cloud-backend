@@ -6,20 +6,53 @@ import { passwordEncrypt } from './utils/handlePassword';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  getUsers() {
-    return this.prisma.user.findMany();
+  async getUsers() {
+    return await this.prisma.users.findMany({
+      omit: {
+        password: true,
+      },
+      include: {
+        roles: true,
+        services: true,
+      },
+    });
   }
   async createUser(user: CreateUserDto) {
     const password = await passwordEncrypt(user.password);
-    return this.prisma.user.create({ data: { ...user, password } });
+    return this.prisma.users.create({ data: { ...user, password } });
   }
-  getUser(id: number) {
-    return this.prisma.user.findUnique({ where: { id } });
+
+  async getUser(id: number) {
+    return await this.prisma.users.findUnique({
+      where: { id },
+      include: { roles: true, services: true },
+    });
   }
+
   deleteUser(id: number) {
-    return this.prisma.user.delete({ where: { id } });
+    return this.prisma.users.delete({ where: { id } });
   }
   updateUser(id: number, user: CreateUserDto) {
-    return this.prisma.user.update({ where: { id }, data: user });
+    return this.prisma.users.update({ where: { id }, data: user });
+  }
+  addRole(userId: number, roleId: number) {
+    return this.prisma.users.update({
+      where: { id: userId },
+      data: {
+        roles: {
+          connect: { id: roleId },
+        },
+      },
+    });
+  }
+  removeRole(userId: number, roleId: number) {
+    return this.prisma.users.update({
+      where: { id: userId },
+      data: {
+        roles: {
+          disconnect: { id: roleId },
+        },
+      },
+    });
   }
 }
