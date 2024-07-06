@@ -46,6 +46,7 @@ export class AuthController {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       session.userId = user.id;
       session.isLoggedIn = true;
+      session.roles = user.roles.map((role) => role.id);
       res.status(HttpStatus.ACCEPTED).send({ ...userData, isLoggedIn: true });
     } catch (e) {
       throw new HttpException(
