@@ -16,9 +16,23 @@ import { IsAdminMiddleware } from './middlewares/is-admin/is-admin.middleware';
 })
 export class ServicesModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(IsAdminMiddleware).forRoutes({
-      path: 'services*',
-      method: RequestMethod.POST,
-    });
+    consumer.apply(IsAdminMiddleware).forRoutes(
+      {
+        path: 'services*',
+        method: RequestMethod.POST,
+      },
+      {
+        path: 'services*',
+        method: RequestMethod.DELETE,
+      },
+      {
+        path: 'services*',
+        method: RequestMethod.PATCH,
+      },
+      {
+        path: 'services/instances-all*',
+        method: RequestMethod.GET,
+      },
+    );
   }
 }

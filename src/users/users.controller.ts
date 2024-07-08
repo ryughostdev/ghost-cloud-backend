@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserStatusGuard } from './guards/user-status/user-status.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -20,6 +20,7 @@ import { Prisma } from '@prisma/client';
 import { EmailService } from 'src/email/email.service';
 import { IsLoggedInGuard } from 'src/auth/guards/is-logged-in/is-logged-in.guard';
 import { IsNotLoggedInGuard } from 'src/auth/guards/is-not-logged-in/is-not-logged-in.guard';
+import { catchHandle } from 'src/chore/utils/catchHandle';
 
 @Controller('users')
 @ApiTags('users')
@@ -38,11 +39,8 @@ export class UsersController {
       if (!usersData)
         throw new HttpException('Users not found', HttpStatus.NOT_FOUND);
       res.send(usersData);
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    } catch (e) {
+      catchHandle(e);
     }
   }
 
@@ -57,11 +55,8 @@ export class UsersController {
       if (!user)
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       res.send(rest);
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    } catch (e) {
+      catchHandle(e);
     }
   }
   @ApiOperation({ summary: 'Create user' })
@@ -83,10 +78,7 @@ export class UsersController {
           throw new HttpException('Email already exists', HttpStatus.CONFLICT);
         }
       } else {
-        throw new HttpException(
-          'Internal server error',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        catchHandle(e);
       }
     }
   }
@@ -100,11 +92,8 @@ export class UsersController {
     try {
       await this.usersService.deleteUser(id);
       res.send({ message: `User id ${id} deleted` });
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    } catch (e) {
+      catchHandle(e);
     }
   }
 
@@ -119,11 +108,8 @@ export class UsersController {
     try {
       const updatedUser = await this.usersService.updateUser(id, body);
       res.send(updatedUser);
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    } catch (e) {
+      catchHandle(e);
     }
   }
 
@@ -138,11 +124,8 @@ export class UsersController {
     try {
       const updatedUser = await this.usersService.addRole(userId, roleId);
       res.send(updatedUser);
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    } catch (e) {
+      catchHandle(e);
     }
   }
   @ApiOperation({ summary: 'Delete role of user' })
@@ -156,11 +139,8 @@ export class UsersController {
     try {
       const updatedUser = await this.usersService.removeRole(userId, roleId);
       res.send(updatedUser);
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    } catch (e) {
+      catchHandle(e);
     }
   }
 }

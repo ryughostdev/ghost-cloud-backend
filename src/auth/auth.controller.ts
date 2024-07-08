@@ -21,6 +21,7 @@ import { IsNotLoggedInGuard } from './guards/is-not-logged-in/is-not-logged-in.g
 import { ApiLogin, ApiLogout, ApiVerify } from './auth.swagger';
 import { EmailService } from 'src/email/email.service';
 import { userRoles } from 'config/constants';
+import { catchHandle } from 'src/chore/utils/catchHandle';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -47,12 +48,10 @@ export class AuthController {
       session.userId = user.id;
       session.isLoggedIn = true;
       session.roles = user.roles.map((role) => role.id);
+      session.services = user.services.map((service) => service.id);
       res.status(HttpStatus.ACCEPTED).send({ ...userData, isLoggedIn: true });
     } catch (e) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      catchHandle(e);
     }
   }
 
@@ -65,11 +64,8 @@ export class AuthController {
       session.isLoggedIn = false;
       const { password, ...userData } = user;
       res.status(HttpStatus.OK).send({ ...userData, isLoggedIn: false });
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    } catch (e) {
+      catchHandle(e);
     }
   }
 
@@ -87,11 +83,8 @@ export class AuthController {
       await this.usersService.addRole(verifyData.id, userRoles.User.id);
       await this.emailService.subscribeToNewsLetter(verifyData.email);
       res.status(HttpStatus.OK).send({ status: 'active' });
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    } catch (e) {
+      catchHandle(e);
     }
   }
 }

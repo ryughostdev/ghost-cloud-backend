@@ -14,25 +14,25 @@ export class ServicesService {
   async getService(id: number) {
     return await this.prisma.services.findUnique({
       where: {
-        id: id,
+        id,
       },
     });
   }
   async createService(data: ServiceDto) {
     return await this.prisma.services.create({
-      data: data,
+      data,
     });
   }
   async updateService(id: number, data: ServiceDto) {
     return await this.prisma.services.update({
-      where: { id: id },
+      where: { id },
       data: data,
     });
   }
 
   async deleteService(id: number) {
     return await this.prisma.services.delete({
-      where: { id: id },
+      where: { id },
     });
   }
 
@@ -44,21 +44,21 @@ export class ServicesService {
   async getServiceInstance(id: number) {
     return await this.prisma.service_instances.findUnique({
       where: {
-        id: id,
+        id,
       },
     });
   }
 
   async createServiceInstance(data: ServiceInstanceDto) {
     return await this.prisma.service_instances.create({
-      data: data,
+      data,
     });
   }
 
   async updateServiceInstance(id: number, data: ServiceInstanceDto) {
     return await this.prisma.service_instances.update({
       where: { id: id },
-      data: data,
+      data,
     });
   }
 
