@@ -144,7 +144,7 @@ export class ServicesController {
         await this.servicesService.getServiceInstance(id);
       if (serviceInstanceData === null) {
         throw new HttpException(
-          'Service instance not found',
+          'User does not have any service',
           HttpStatus.NOT_FOUND,
         );
       } else {

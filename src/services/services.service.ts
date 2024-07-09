@@ -42,9 +42,12 @@ export class ServicesService {
   }
 
   async getServiceInstance(id: number) {
-    return await this.prisma.service_instances.findUnique({
+    return await this.prisma.service_instances.findMany({
       where: {
-        id,
+        userId: id,
+      },
+      include: {
+        service: true,
       },
     });
   }
