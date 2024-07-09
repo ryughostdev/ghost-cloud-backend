@@ -42,14 +42,20 @@ export class AuthController {
   ) {
     try {
       const user = await this.authService.login(body);
-      const { password, ...userData } = user;
+      const { password, roles, services, ...userData } = user;
+      const userRoles = roles.map((role) => role.id);
+      const userServices = services.map((service) => service.id);
       if (!user)
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       session.userId = user.id;
       session.isLoggedIn = true;
-      session.roles = user.roles.map((role) => role.id);
-      session.services = user.services.map((service) => service.id);
-      res.status(HttpStatus.ACCEPTED).send({ ...userData, isLoggedIn: true });
+      session.roles = userRoles;
+      session.services = userServices;
+      res.status(HttpStatus.ACCEPTED).send({
+        ...userData,
+        roles: userRoles,
+        isLoggedIn: true,
+      });
     } catch (e) {
       catchHandle(e);
     }

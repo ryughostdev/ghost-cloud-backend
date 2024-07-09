@@ -21,6 +21,7 @@ import { EmailService } from 'src/email/email.service';
 import { IsLoggedInGuard } from 'src/auth/guards/is-logged-in/is-logged-in.guard';
 import { IsNotLoggedInGuard } from 'src/auth/guards/is-not-logged-in/is-not-logged-in.guard';
 import { catchHandle } from 'src/chore/utils/catchHandle';
+import { userRoles } from 'config/constants';
 
 @Controller('users')
 @ApiTags('users')
@@ -65,12 +66,11 @@ export class UsersController {
   async createUser(@Res() res: Response, @Body() body: CreateUserDto) {
     try {
       const newUser = await this.usersService.createUser(body);
-      const { password, ...user } = newUser;
 
       if (newUser.id >= 1) {
         await this.emailService.sendEmailVerification(newUser.email);
       }
-      res.status(HttpStatus.CREATED).send(user);
+      res.status(HttpStatus.CREATED).send(newUser);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         // The .code property can be accessed in a type-safe manner

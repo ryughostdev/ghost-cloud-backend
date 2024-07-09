@@ -16,6 +16,7 @@ export class AuthService {
         services: true,
         roles: true,
       },
+      omit: { createdAt: true, updatedAt: true },
     });
     if (!user) return null;
     const check = await passwordCompare(body.password, user.password);

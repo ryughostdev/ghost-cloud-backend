@@ -13,19 +13,25 @@ export class UsersService {
       },
       include: {
         roles: true,
-        services: true,
       },
     });
   }
   async createUser(user: CreateUserDto) {
     const password = await passwordEncrypt(user.password);
-    return this.prisma.users.create({ data: { ...user, password } });
+    return this.prisma.users.create({
+      data: { ...user, password },
+      omit: {
+        password: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 
   async getUser(id: number) {
     return await this.prisma.users.findUnique({
       where: { id },
-      include: { roles: true, services: true },
+      include: { roles: true },
     });
   }
 
