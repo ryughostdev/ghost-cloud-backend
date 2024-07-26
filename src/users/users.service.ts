@@ -12,7 +12,19 @@ export class UsersService {
         password: true,
       },
       include: {
-        roles: true,
+        roles: {
+          select: {
+            id: true,
+          },
+        },
+        services: {
+          select: {
+            id: true,
+            serviceId: true,
+            status: true,
+            paymentDate: true,
+          },
+        },
       },
     });
   }

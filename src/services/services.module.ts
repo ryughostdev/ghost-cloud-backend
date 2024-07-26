@@ -33,6 +33,10 @@ export class ServicesModule implements NestModule {
         path: 'services/instances-all*',
         method: RequestMethod.GET,
       },
+      {
+        path: 'users',
+        method: RequestMethod.GET,
+      },
     );
   }
 }
