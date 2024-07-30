@@ -8,28 +8,29 @@ import {
 
 export class ServiceInstanceDto {
   @IsInt()
+  @IsOptional()
   serviceId: number;
 
   @IsInt()
   userId: number;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   ip: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   serviceUsername: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   servicePassword: string;
 
   @IsNotEmpty()
   paymentDate: Date;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   price: number;
 
   @IsString()

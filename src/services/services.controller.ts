@@ -44,6 +44,38 @@ export class ServicesController {
       );
     }
   }
+  @Patch('instances/:id')
+  @UseGuards(IsNotLoggedInGuard)
+  async updateServiceInstanceController(
+    @Res() res: Response,
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session: SessionData,
+    @Body() body: ServiceInstanceDto,
+  ) {
+    console.log(body);
+    try {
+      if (!session.services.includes(id)) {
+        if (!session.roles.includes(userRoles.Admin.id)) {
+          throw new HttpException(
+            'You do not have the permission to access this resource',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+      }
+      const serviceInstanceData =
+        await this.servicesService.updateServiceInstance(id, body);
+      if (serviceInstanceData === null) {
+        throw new HttpException(
+          'Service instance not found',
+          HttpStatus.NOT_FOUND,
+        );
+      } else {
+        res.status(HttpStatus.OK).send(serviceInstanceData);
+      }
+    } catch (e) {
+      catchHandle(e);
+    }
+  }
   @Get('instances-all')
   @UseGuards(IsNotLoggedInGuard)
   async getServiceInstancesController(@Res() res: Response) {

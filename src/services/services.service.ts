@@ -60,7 +60,7 @@ export class ServicesService {
 
   async updateServiceInstance(id: number, data: ServiceInstanceDto) {
     return await this.prisma.service_instances.update({
-      where: { id: id },
+      where: { id },
       data,
     });
   }
