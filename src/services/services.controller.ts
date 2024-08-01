@@ -44,6 +44,7 @@ export class ServicesController {
       );
     }
   }
+
   @Patch('instances/:id')
   @UseGuards(IsNotLoggedInGuard)
   async updateServiceInstanceController(
@@ -52,7 +53,6 @@ export class ServicesController {
     @Session() session: SessionData,
     @Body() body: ServiceInstanceDto,
   ) {
-    console.log(body);
     try {
       if (!session.services.includes(id)) {
         if (!session.roles.includes(userRoles.Admin.id)) {
@@ -72,6 +72,22 @@ export class ServicesController {
       } else {
         res.status(HttpStatus.OK).send(serviceInstanceData);
       }
+    } catch (e) {
+      catchHandle(e);
+    }
+  }
+  @Post('instances')
+  @UseGuards(IsNotLoggedInGuard)
+  async createServiceInstanceController(
+    @Res() res: Response,
+    @Body() body: ServiceInstanceDto,
+    @Session() session: SessionData,
+  ) {
+    try {
+      const serviceInstanceData =
+        await this.servicesService.createServiceInstance(body);
+      console.log(serviceInstanceData);
+      res.status(HttpStatus.CREATED).send(serviceInstanceData);
     } catch (e) {
       catchHandle(e);
     }
@@ -182,31 +198,6 @@ export class ServicesController {
       } else {
         res.status(HttpStatus.OK).send(serviceInstanceData);
       }
-    } catch (e) {
-      catchHandle(e);
-    }
-  }
-
-  @Post('instances')
-  @UseGuards(IsNotLoggedInGuard)
-  async createServiceInstanceController(
-    @Res() res: Response,
-    @Body() body: ServiceInstanceDto,
-    @Session() session: SessionData,
-  ) {
-    // NOTE es posible que se necesite un middleware para verificar si el usuario tiene permisos similar a esto
-    try {
-      if (session.userId !== body.userId) {
-        if (!session.roles.includes(userRoles.Admin.id)) {
-          throw new HttpException(
-            'You do not have the permission to access this resource',
-            HttpStatus.UNAUTHORIZED,
-          );
-        }
-      }
-      const serviceInstanceData =
-        await this.servicesService.createServiceInstance(body);
-      res.status(HttpStatus.CREATED).send(serviceInstanceData);
     } catch (e) {
       catchHandle(e);
     }
