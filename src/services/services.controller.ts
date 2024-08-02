@@ -201,6 +201,19 @@ export class ServicesController {
       catchHandle(e);
     }
   }
+  @Delete('instances/:id')
+  @UseGuards(IsNotLoggedInGuard)
+  async deleteServiceInstanceController(
+    @Res() res: Response,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    try {
+      const serviceData = await this.servicesService.deleteServiceInstance(id);
+      res.status(HttpStatus.OK).send(serviceData);
+    } catch (e) {
+      catchHandle(e);
+    }
+  }
 
   @Get('instances/:id')
   @UseGuards(IsNotLoggedInGuard)
