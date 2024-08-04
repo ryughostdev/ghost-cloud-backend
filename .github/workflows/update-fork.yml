@@ -1,0 +1,30 @@
+name: Update Fork
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Ejecuta todos los días a medianoche
+  workflow_dispatch:
+
+jobs:
+  update-fork:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Fork Repository
+        uses: actions/checkout@v2
+        with:
+          ref: main
+
+      - name: Add Upstream Remote
+        run: git remote add upstream https://github.com/Leotheprodu/ghost-cloud-backend.git
+
+      - name: Fetch Upstream Changes
+        run: git fetch upstream
+
+      - name: Merge Upstream Changes
+        run: git merge upstream/main
+
+      - name: Push Changes to Fork
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: git push origin main
